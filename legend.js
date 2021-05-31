@@ -40,7 +40,7 @@ const legends = {
     nature:
     `
     <div id="legend-nature" class="sub-legend">
-        <h6>Natural Features</h6>
+        <h6>Water and forests</h6>
         <div class="row align-items-center">
                 <div class="col-1 ml-4" style="color: blue; font-size: xx-large;">&#9679;</div>
                 <div class="col-10">Water</div>
