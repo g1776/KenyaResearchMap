@@ -105,6 +105,10 @@ function toggleLayer(layer, cb){
     const legend = legends[layer] == undefined ? "" : legends[layer]
 
     if (cb.checked) {
+        if ($("#legend-studies").length != 0) {
+            console.log("Layer already exists (this should never get called)")
+            return;
+        }
         console.log(`adding layer for ${layer}`)
 
         // add layer

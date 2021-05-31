@@ -42,7 +42,7 @@
                     <div id="form-container" style="display: block; overflow: auto;">
                         <form class="ml-3">
                             <div class="form-group" style="float: left; width: 50%;">
-                                <div class="checkbox"><label><input type="checkbox" checked="checked" onclick="toggleLayer('studies', this)" id="studies-checkbox">Studies</label></div>
+                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('studies', this)" id="studies-checkbox">Studies</label></div>
                                 <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('railway', this)" >Railways</label></div>
                                 <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('topography', this)" >Topography</label></div>
                                 <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('gec', this)" >The Great Elephant Census</label></div>
@@ -59,13 +59,11 @@
         </div>
         <script src="researchMap.js" ></script>
         <script>
-            $("document").ready(function() {
-                const studiesChkbx = $("#studies-checkbox")
-                studiesChkbx.ready(function() {
-                    studiesChkbx.click();
-                    studiesChkbx.prop("checked", true)
-                });    
-            });
+            window.onload = onPageLoad();
+
+            function onPageLoad() {
+                $("#studies-checkbox").click();
+            }
         </script>
     </body>
     <!-- <footer style="text-align: center;">
