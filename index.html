@@ -1,0 +1,75 @@
+<html>
+    <head>
+
+    
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+        <!-- Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+        <link rel="stylesheet" href="researchMap.css" />
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+
+        
+        <!-- Data -->
+        <script src="./data/studies.js"></script>
+        <script src="./data/gec.js"></script>
+        <script src="./data/countries.js"></script>
+        <script src="./data/natural.js"></script>
+        <script src="./data/roads.js"></script>
+        <script src="./data/waterways.js"></script>
+
+        <!-- Misc -->
+        <script src="./legend.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+        
+    </head>
+    <body>
+        <div class=" px-3 py-3">
+            <div id="header">
+                <h1>Anti-Poaching Research Map</h1>
+            </div>
+            <div class="content">
+                <div id="map"></div>
+                <div id="legend" class="jumbotron" >
+                    <!-- Buttons -->
+                    <h3>Layers</h3>
+                    <div id="form-container" style="display: block; overflow: auto;">
+                        <form class="ml-3">
+                            <div class="form-group" style="float: left; width: 50%;">
+                                <div class="checkbox"><label><input type="checkbox" checked="checked" onclick="toggleLayer('studies', this)" id="studies-checkbox">Studies</label></div>
+                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('railway', this)" >Railways</label></div>
+                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('topography', this)" >Topography</label></div>
+                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('gec', this)" >The Great Elephant Census</label></div>
+                            </div>
+                            <div class="form-group" style="overflow: hidden; width: 50%;">
+                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('nature', this); toggleLayer('water', this);" >Water and forests</label></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="legend-container">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="researchMap.js" ></script>
+        <script>
+            $("document").ready(function() {
+                const studiesChkbx = $("#studies-checkbox")
+                studiesChkbx.ready(function() {
+                    //studiesChkbx.prop("checked", true)
+                    studiesChkbx.click();
+                    studiesChkbx.prop("checked", true)
+                });    
+            });
+        </script>
+    </body>
+    <!-- <footer style="text-align: center;">
+        The Pennsylvania State Univeristy - Anti-poaching Research 2021
+    </footer> -->
+</html>
