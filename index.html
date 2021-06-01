@@ -22,6 +22,7 @@
         <script src="./data/natural.js"></script>
         <script src="./data/roads.js"></script>
         <script src="./data/waterways.js"></script>
+        <script src="./data/parks.js"></script>
 
         <!-- Misc -->
         <script src="./legend.js"></script>
@@ -43,11 +44,11 @@
                         <form class="ml-3">
                             <div class="form-group" style="float: left; width: 50%;">
                                 <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('studies', this)" id="studies-checkbox">Studies</label></div>
-                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('railway', this)" >Railways</label></div>
-                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('topography', this)" >Topography</label></div>
+                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('parks', this)" id="studies-checkbox">National parks</label></div>
                                 <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('gec', this)" >The Great Elephant Census</label></div>
                             </div>
                             <div class="form-group" style="overflow: hidden; width: 50%;">
+                                <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('railway', this)" >Railways</label></div>
                                 <div class="checkbox"><label><input type="checkbox" onclick="toggleLayer('nature', this); toggleLayer('water', this);" >Water and forests</label></div>
                             </div>
                         </form>

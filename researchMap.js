@@ -11,6 +11,31 @@ L.Control.Watermark = L.Control.extend({
     }
 });
 
+const markerStyle = (color, scale) => `
+    background-color: ${color};
+    width: ${scale}rem;
+    height: ${scale}rem;
+    display: block;
+    left: -${scale/2}rem;
+    top: -${scale/2}rem;
+    position: relative;
+    border-radius: ${scale}rem ${scale}rem 0;
+    transform: rotate(45deg);
+    border: 1px solid #FFFFFF`
+
+const createMarker = ({lat, long, color, tooltip, name, scale = 1}) => {
+    const icon = L.divIcon({
+        className: "my-custom-pin",
+        iconAnchor: [0, 24],
+        labelAnchor: [-6, 0],
+        popupAnchor: [0, -36],
+        html: `<span style="${markerStyle(color, scale)}" />`
+    })
+    const marker = L.marker([lat, long], {icon, name})
+    marker.bindPopup(tooltip)
+    return marker
+}
+
 L.control.watermark = function(opts) {
     return new L.Control.Watermark(opts);
 }
@@ -28,22 +53,21 @@ CartoDB_Voyager.addTo(mymap);
 
 ///// layers
 
+
+// Locations of studies
 const studiesLayer = studies_data.map(x => {
     const colors = {
         PAWSINTERCEPT: "purple",
         AirShepherd: "red",
         RGBTIR: "orange"
     }
-    const circle = L.circle([x.lat, x.long], {
+    return createMarker({
+        lat: x.lat,
+        long: x.long,
         color: colors[x.study],
-        fillColor: colors[x.study],
-        fillOpacity: 0.5,
-        weight: 0.8,
-        radius: 50000,
+        tooltip: x.name,
         name: "studies"
-    })
-    circle.bindPopup(x.name);
-    return circle
+    });
 })
 
 const railwayLayer = L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
@@ -52,25 +76,38 @@ const railwayLayer = L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/
 	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="https://www.OpenRailwayMap.org">OpenRailwayMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 });
 
-const topographyLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-    name: 'topography',
-	maxZoom: 7,
-	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-});
 
+// the Great Elephant Census
 const gecLayer = L.geoJSON(countries, 
     {name: "gec", 
     attribution: '<a href="http://www.greatelephantcensus.com/final-report">GEC Final report</a>',
     style: feature => {
-        if (gec_down.indexOf(feature.properties.name) != -1) return {color: "red", weight: .5}
-        else if (gec_up.indexOf(feature.properties.name) != -1) return {color: "green", weight: .5}
-        else if (gec_stable.indexOf(feature.properties.name) != -1) return {color: "blue", weight: .5}
-        else return {color: "transparent"}
+        const colors = {
+            up: "green",
+            stable: "blue",
+            down: "red"
+        }
+        const country = feature.properties.name;
+
+        // country not in gec data
+        if (gec_data.map(d => d.country).indexOf(country) == -1) return {color: "transparent"};
+
+        const trend = gec_data.filter(d => d.country == country)[0].trend
+        return {color: colors[trend], weight: 0.8, opacity: 0.6}
+    },
+    onEachFeature: (feature, layer) => {
+        const country = feature.properties.name;
+
+        // add tooltip for each country in gec
+        const countryInGEC = gec_data.map(d => d.country).indexOf(country) != -1
+        if (countryInGEC) {
+            layer.bindPopup("Elephant count: " + gec_data.filter(d => d.country == country)[0].count)
+        }
     }
 })
 
 
-// these two layers are combined
+// these two layers are used simultaneously
 nature_data.features = nature_data.features.filter(feature => feature.properties.type != "park")
 const natureLayer = L.geoJSON(nature_data, {
     name: "nature",
@@ -88,6 +125,18 @@ const waterLayer = L.geoJSON(water_data, {
     onEachFeature: (feature, layer) => layer.bindPopup(feature.properties.name || "No info")
 })
 
+// national parks
+const parksLayer = parks_data.map(x => {
+    return createMarker({
+        lat: x.lat,
+        long: x.long,
+        color: "steelblue",
+        tooltip: x.name,
+        name: "parks",
+        scale: 0.75
+    });
+})
+
 
 // onclick layer toggle
 function toggleLayer(layer, cb){
@@ -95,10 +144,10 @@ function toggleLayer(layer, cb){
     const allLayers = [
         {name: "studies", layer: studiesLayer},
         {name: "railway", layer: railwayLayer},
-        {name: "topography", layer: topographyLayer},
         {name: "gec", layer: gecLayer},
         {name: "water", layer: waterLayer},
-        {name: "nature", layer: natureLayer}
+        {name: "nature", layer: natureLayer},
+        {name: "parks", layer: parksLayer}
     ]
 
     const legendContainer = document.getElementById("legend-container")
@@ -113,7 +162,8 @@ function toggleLayer(layer, cb){
 
         // add layer
         const layerToAdd = allLayers.filter(x => x.name == layer)[0].layer;
-        if (layer == "studies"){
+        const isMarkersLayer = ["studies", "parks"].indexOf(layer) != -1
+        if (isMarkersLayer){
             layerToAdd.forEach(circle => circle.addTo(mymap))
         } else {
             layerToAdd.addTo(mymap)
